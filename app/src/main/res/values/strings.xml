@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">playground</string>
+    <string name="label_biometric">Biometric</string>
+    <string name="label_coach_mark">CoachMark</string>
+</resources>
