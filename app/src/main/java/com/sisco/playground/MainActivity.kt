@@ -1,13 +1,12 @@
 package com.sisco.playground
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sisco.playground.biometric.BiometricActivity
-import com.sisco.playground.coachmark.CoachMarkActivity
+import com.sisco.playground.compose.LoginActivity
 import com.sisco.playground.databinding.ActivityMainBinding
-
+import com.sisco.playground.module.openProfileActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,8 +21,11 @@ class MainActivity : AppCompatActivity() {
             btnBiometric.setOnClickListener {
                 startActivity(Intent(this@MainActivity, BiometricActivity::class.java))
             }
-            btnCoachMark.setOnClickListener {
-                startActivity(Intent(this@MainActivity, CoachMarkActivity::class.java))
+            btnLogin.setOnClickListener {
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            }
+            btnProfile.setOnClickListener {
+                openProfileActivity(this@MainActivity)
             }
         }
     }

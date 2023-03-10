@@ -15,10 +15,17 @@
         style="@style/button_color" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCoachMark"
+        android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_coach_mark"
+        android:text="@string/label_compose_login"
         style="@style/button_color" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/profile"
+        style="@style/button_color"/>
 
 </LinearLayout>
