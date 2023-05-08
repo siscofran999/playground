@@ -11,7 +11,6 @@ import android.os.CancellationSignal
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import com.sisco.playground.R
 import com.sisco.playground.databinding.ActivityBiometricBinding
 
 class BiometricActivity : AppCompatActivity() {
@@ -44,7 +43,7 @@ class BiometricActivity : AppCompatActivity() {
         val biometricPrompt = BiometricPrompt.Builder(this)
             .setTitle("Title of Prompt")
             .setSubtitle("Auth is required")
-            .setDescription("this app use fingerprint protect")
+//            .setDescription("this app use fingerprint protect")
             .setNegativeButton("Cancel", this.mainExecutor) { dialogInterface, i ->
                 notifyUser("Auth Cancel")
             }.build()

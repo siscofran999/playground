@@ -13,5 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "playground"
-include ':app'
-include ':profile'
+include(":app", ":profile")
