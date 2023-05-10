@@ -7,25 +7,32 @@
     style="@style/bg"
     tools:context=".MainActivity">
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnBiometric"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_biometric"
         style="@style/button_color" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/label_compose_login"
         style="@style/button_color" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/profile"
+        style="@style/button_color"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnMotionLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_motion_layout"
         style="@style/button_color"/>
 
 </LinearLayout>

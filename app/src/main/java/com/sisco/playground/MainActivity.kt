@@ -7,6 +7,7 @@ import com.sisco.playground.biometric.BiometricActivity
 import com.sisco.playground.compose.LoginActivity
 import com.sisco.playground.databinding.ActivityMainBinding
 import com.sisco.playground.module.openProfileActivity
+import com.sisco.playground.motionLayout.MotionLayoutActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +27,9 @@ class MainActivity : AppCompatActivity() {
             }
             btnProfile.setOnClickListener {
                 openProfileActivity(this@MainActivity)
+            }
+            btnMotionLayout.setOnClickListener {
+                startActivity(Intent(this@MainActivity, MotionLayoutActivity::class.java))
             }
         }
     }
