@@ -35,4 +35,18 @@
         android:text="@string/label_motion_layout"
         style="@style/button_color"/>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCoachMark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_coach_mark"
+        style="@style/button_color"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSeekbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_seekbar"
+        style="@style/button_color"/>
+
 </LinearLayout>

@@ -16,23 +16,28 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:theme="@style/Theme.Playground"
         tools:targetApi="31">
         <activity
-            android:name=".motionLayout.MotionLayoutActivity"
-            android:theme="@style/Theme.AppCompat"
+            android:name=".seekbar.SeekbarActivity"
             android:exported="false" />
+        <activity
+            android:name=".coachmark.CoachMarkActivity"
+            android:exported="false" />
+        <activity
+            android:name=".motionLayout.MotionLayoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".compose.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
         <activity
             android:name=".biometric.BiometricActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Playground" />
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Playground">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

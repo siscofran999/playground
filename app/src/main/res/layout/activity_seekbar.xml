@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGraySoft"
+    tools:context=".seekbar.SeekbarActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/valueLimit"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="6dp"
+        android:text="Limit Anda" />
+
+    <TextView
+        android:id="@+id/valueLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/seekBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dimen_10dp"
+        tools:text="10.000.000"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="16dp"
+        android:maxHeight="6dip"
+        android:progressDrawable="@drawable/custom_progress"
+        android:thumb="@drawable/custom_thumb" />
+
+    <TextView
+        android:id="@+id/minLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seekBar"
+        android:layout_alignStart="@id/seekBar"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        tools:text="1.000.000" />
+
+    <TextView
+        android:id="@+id/maxLimit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seekBar"
+        android:layout_alignEnd="@id/seekBar"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        tools:text="10.000.000" />
+
+</RelativeLayout>
