@@ -1,25 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/coachmarkLayout"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#99000000"
-    android:gravity="center">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/coachmarkText"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/itemDashed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is a coachmark"
-        android:textColor="#ffffff"
-        android:textSize="18sp" />
+        android:visibility="gone"
+        app:srcCompat="@drawable/img_dashed_coachmark_bottom"/>
 
-    <ImageView
-        android:id="@+id/coachmarkArrow"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/itemRoot"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="26dp"
+        android:padding="20dp"
+        android:visibility="gone"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_up"
-        android:layout_below="@id/coachmarkText"
-        android:layout_centerHorizontal="true" />
+        android:background="@drawable/bg_coachmark" >
+
+        <TextView
+            android:id="@+id/txvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rekening &amp; Kartu Kredit"
+            android:layout_alignParentTop="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#0d192e"/>
+
+        <TextView
+            android:id="@+id/txvSubTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lihat informasi Akun Anda terkini melalui tab berikut."
+            android:layout_below="@id/txvTitle"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:textColor="#152a4c"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textSize="10sp"
+            android:text="(1/5)"
+            tools:ignore="SmallSp" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#dba621"
+            android:text="Berikutnya"
+            android:textAllCaps="false"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/txvSubTitle"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

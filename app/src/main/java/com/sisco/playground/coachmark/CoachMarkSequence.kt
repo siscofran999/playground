@@ -10,6 +10,11 @@ class CoachMarkSequence(private val mContext: Activity) {
     private val mSequenceQueue: Queue<CoachMarkOverlay.Builder> = LinkedList()
     var mCoachMark: CoachMarkOverlay? = null
     private var mSequenceItem: CoachMarkOverlay.Builder? = null
+    private var mSequenceListener: SequenceListener = object : SequenceListener {
+        override fun onNextItem(coachMark: CoachMarkOverlay, coachMarkSequence: CoachMarkSequence) {
+            super.onNextItem(coachMark, coachMarkSequence)
+        }
+    }
 
     private val mCoachMarkOverlayClickListener: CoachMarkOverlay.OverlayClickListener =
         object : CoachMarkOverlay.OverlayClickListener {
@@ -23,12 +28,14 @@ class CoachMarkSequence(private val mContext: Activity) {
                     mSequenceItem?.apply {
                         overlay.mBuilder.setTabPosition(getTabPosition())
                         if (getOverlayTargetView() != null) {
-                            overlay.mBuilder.setOverlayTargetView(getOverlayTargetView()!!)
+                            overlay.mBuilder.setOverlayTargetView(getOverlayTargetView())
                         } else {
                             overlay.mBuilder.setOverlayTargetView(null)
                             overlay.mBuilder.setOverlayTargetCoordinates(getOverlayTargetCoordinates())
                         }
-                        overlay.removeAllViews()
+                        mSequenceListener.apply {
+                            onNextItem(overlay, this@CoachMarkSequence)
+                        }
                     }
                 } else {
                     (mContext.window.decorView as ViewGroup).removeView(overlay)
@@ -36,13 +43,23 @@ class CoachMarkSequence(private val mContext: Activity) {
             }
         }
 
-    fun addItem(coachMarkBuilder: CoachMarkOverlay.Builder, addOverlayClickListener: Boolean) {
-        if (coachMarkBuilder.getOverlayClickListener() == null) {
-            if (addOverlayClickListener) {
-                coachMarkBuilder.setOverlayClickListener(mCoachMarkOverlayClickListener)
-            }
+    // set the data to view the next descriptions.
+    fun setNextView() {
+        if (mCoachMark != null && mSequenceItem != null) {
+            mCoachMark?.invalidate()
         }
-        mSequenceQueue.add(coachMarkBuilder)
+    }
+
+    fun setSequenceListener(listener: SequenceListener) {
+        mSequenceListener = listener
+    }
+
+    fun addItem(targetView: View) {
+        CoachMarkOverlay.Builder(mContext).apply {
+            setOverlayClickListener(mCoachMarkOverlayClickListener)
+            setOverlayTargetView(targetView)
+            mSequenceQueue.add(this)
+        }
     }
 
     fun start(rootView: ViewGroup? = null) {

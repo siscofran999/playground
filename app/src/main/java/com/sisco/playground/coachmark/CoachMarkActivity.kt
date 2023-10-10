@@ -1,6 +1,7 @@
 package com.sisco.playground.coachmark
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,10 +22,14 @@ class CoachMarkActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val coachMarkSequence = CoachMarkSequence(this)
-        val coachMarkBuilder = CoachMarkOverlay.Builder(this)
-            .setOverlayTargetView(binding.txvStart)
-
-        coachMarkSequence.addItem(coachMarkBuilder, true)
+        coachMarkSequence.addItem(binding.txvTop)
+        coachMarkSequence.addItem(binding.txvStartTop)
+        coachMarkSequence.addItem(binding.txvEndTop)
+        coachMarkSequence.addItem(binding.txvStart)
+        coachMarkSequence.addItem(binding.txvEnd)
+        coachMarkSequence.addItem(binding.txvEndBottom)
+        coachMarkSequence.addItem(binding.txvStartBottom)
+        coachMarkSequence.addItem(binding.txvBottom)
         coachMarkSequence.start(window?.decorView as ViewGroup)
     }
 }

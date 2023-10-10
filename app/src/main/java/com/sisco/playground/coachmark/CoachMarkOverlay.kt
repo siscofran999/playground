@@ -2,15 +2,16 @@ package com.sisco.playground.coachmark
 
 import android.content.Context
 import android.graphics.*
-import android.os.Build
-import android.util.AttributeSet
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.annotation.RequiresApi
+import com.sisco.playground.R
+import com.sisco.playground.databinding.ItemCoachmarkBinding
 import kotlin.math.roundToInt
 
-class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context) {
+class CoachMarkOverlay constructor(private val mContext: Context, builder: Builder) : FrameLayout(mContext) {
 
     var mBuilder: Builder
     private var mBaseBitmap: Bitmap? = null
@@ -18,12 +19,15 @@ class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context
     private val mOverlayTintPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mOverlayTransparentPaint = Paint()
 
+    private val binding = ItemCoachmarkBinding.inflate(LayoutInflater.from(mContext), this, true)
+
     init {
         this.setWillNotDraw(false)
         mBuilder = builder
         mOverlayTransparentPaint.color = Color.TRANSPARENT
         mOverlayTransparentPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
-        setOnClickListener {
+        // hide
+        binding.btnNext.setOnClickListener {
             mBuilder.getOverlayClickListener()?.apply {
                 onOverlayClick(this@CoachMarkOverlay)
                 mShouldRender = true
@@ -46,76 +50,153 @@ class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context
 
     private fun drawOverlayTint() {
         mBaseBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        mLayer = Canvas(mBaseBitmap!!)
-        mOverlayTintPaint.color = mBuilder.getOverlayColor()
-        val alpha = mBuilder.getOverlayOpacity()
-        mOverlayTintPaint.alpha = alpha
-        mLayer?.drawRect(Rect(0, 0, width, height), mOverlayTintPaint)
+        mBaseBitmap?.apply {
+            mLayer = Canvas(this)
+            mOverlayTintPaint.color = mBuilder.getOverlayColor()
+            val alpha = mBuilder.getOverlayOpacity()
+            mOverlayTintPaint.alpha = alpha
+            mLayer?.drawRect(Rect(0, 0, width, height), mOverlayTintPaint)
+        }
     }
 
     private fun drawTransparentOverlay() {
-        val targetViewSize = Rect()
-        if (mBuilder.getOverlayTargetView() != null) {
-            mBuilder.getOverlayTargetView()?.getGlobalVisibleRect(targetViewSize)
-        } else {
-            targetViewSize.set(mBuilder.getOverlayTargetCoordinates())
-        }
-        targetViewSize.left -= mBuilder.getOverlayTransparentPadding().left
-        targetViewSize.top -= mBuilder.getOverlayTransparentPadding().top
-        targetViewSize.right += mBuilder.getOverlayTransparentPadding().right
-        targetViewSize.bottom += mBuilder.getOverlayTransparentPadding().bottom
+        mLayer?.let {layer ->
+            val targetViewSize = Rect()
+            if (mBuilder.getOverlayTargetView() != null) {
+                mBuilder.getOverlayTargetView()?.getGlobalVisibleRect(targetViewSize)
+            } else {
+                targetViewSize.set(mBuilder.getOverlayTargetCoordinates())
+            }
+            targetViewSize.left -= mBuilder.getOverlayTransparentPadding().left
+            targetViewSize.top -= mBuilder.getOverlayTransparentPadding().top
+            targetViewSize.right += mBuilder.getOverlayTransparentPadding().right
+            targetViewSize.bottom += mBuilder.getOverlayTransparentPadding().bottom
 
-        targetViewSize.left += mBuilder.getOverlayTransparentMargin().left
-        targetViewSize.top += mBuilder.getOverlayTransparentMargin().top
-        targetViewSize.right += mBuilder.getOverlayTransparentMargin().right
-        targetViewSize.bottom += mBuilder.getOverlayTransparentMargin().bottom
-        when (mBuilder.getOverlayTransparentShape()) {
-            Shape.BOX -> {
-                mLayer?.drawRoundRect(
-                    RectF(targetViewSize),
-                    mBuilder.getOverlayTransparentCornerRadius(),
-                    mBuilder.getOverlayTransparentCornerRadius(),
-                    mOverlayTransparentPaint
-                )
-            }
-            Shape.CIRCLE -> {
-                var radius: Float = mBuilder.getOverlayTransparentCircleRadius()
-                when (mBuilder.getOverLayType()) {
-                    ShapeType.INSIDE -> {
-                        if (radius < 0) {
-                            radius = (targetViewSize.height() / 2).toFloat()
-                        }
-                    }
-                    ShapeType.OUTSIDE -> {
-                        if (radius < 0) {
-                            radius = (targetViewSize.width() / 2).toFloat()
+            targetViewSize.left += mBuilder.getOverlayTransparentMargin().left
+            targetViewSize.top += mBuilder.getOverlayTransparentMargin().top
+            targetViewSize.right += mBuilder.getOverlayTransparentMargin().right
+            targetViewSize.bottom += mBuilder.getOverlayTransparentMargin().bottom
+
+            Log.i("TAG", "drawTransparentOverlay: $targetViewSize")
+            Log.i("TAG", "drawTransparentOverlay top: ${targetViewSize.top}")
+            Log.i("TAG", "drawTransparentOverlay left: ${targetViewSize.left}")
+            Log.i("TAG", "drawTransparentOverlay right: ${targetViewSize.right}")
+            Log.i("TAG", "drawTransparentOverlay bottom: ${targetViewSize.bottom}")
+            Log.i("TAG", "drawTransparentOverlay y: ${targetViewSize.exactCenterY()}")
+            Log.i("TAG", "drawTransparentOverlay x: ${targetViewSize.exactCenterX()}")
+            val layerWidth = layer.width
+            val layerHeight = layer.height
+            when (mBuilder.getOverlayTransparentShape()) {
+                Shape.BOX -> {
+                    layer.drawRoundRect(
+                        RectF(targetViewSize),
+                        mBuilder.getOverlayTransparentCornerRadius(),
+                        mBuilder.getOverlayTransparentCornerRadius(),
+                        mOverlayTransparentPaint
+                    )
+
+                    Log.i("TAG", "drawTransparentOverlay width screen: $layerWidth")
+                    Log.i("TAG", "drawTransparentOverlay height screen: $layerHeight")
+                    val halfWidthScreen = layerWidth/2
+                    val halfHeightScreen = layerHeight/2
+                    Log.i("TAG", "drawTransparentOverlay half width screen: $halfWidthScreen")
+                    Log.i("TAG", "drawTransparentOverlay half height screen: $halfHeightScreen")
+
+                    val leftMiddleRight = positionLeftMiddleRight(targetViewSize.left, targetViewSize.right ,halfWidthScreen)
+                    val topBottom = positionTopBottom(targetViewSize.bottom, halfHeightScreen)
+                    Log.i("TAG", "drawTransparentOverlay position: $leftMiddleRight")
+                    Log.i("TAG", "drawTransparentOverlay position: $topBottom")
+                    binding.apply {
+                        if (topBottom == Gravity.TOP) {
+                            when(leftMiddleRight) {
+                                Gravity.START -> {
+                                    itemDashed.visibility = View.VISIBLE
+                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_left)
+                                    itemDashed.translationX = targetViewSize.right.plus(30).toFloat()
+                                    itemDashed.translationY = targetViewSize.bottom.minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).toFloat()
+                                    itemRoot.visibility = View.VISIBLE
+                                    itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
+                                    itemRoot.translationX = 0f
+                                }
+                                Gravity.CENTER -> {
+                                    itemDashed.visibility = View.VISIBLE
+                                    itemDashed.translationX = layerWidth.div(2).toFloat()
+                                    itemDashed.translationY = targetViewSize.bottom.plus(30).toFloat()
+                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_top)
+                                    itemRoot.visibility = View.VISIBLE
+                                    itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
+                                    itemRoot.translationX = 0f
+                                }
+                                Gravity.END -> {
+                                    itemDashed.visibility = View.VISIBLE
+                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_right)
+                                    itemDashed.translationX = targetViewSize.left.minus(120).toFloat()
+                                    itemDashed.translationY = targetViewSize.bottom.minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).toFloat()
+                                    itemRoot.visibility = View.VISIBLE
+                                    itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
+                                    itemRoot.translationX = 0f
+                                }
+                                else -> {}
+                            }
+                        }else {
+                            when(leftMiddleRight) {
+                                Gravity.START -> {
+                                    itemDashed.visibility = View.VISIBLE
+                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_left_bottom)
+                                    itemDashed.translationX = targetViewSize.right.plus(30).toFloat()
+                                    itemDashed.translationY = (targetViewSize.bottom.minus(itemDashed.height)).minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).plus(4).toFloat()
+                                    itemRoot.visibility = View.VISIBLE
+                                    itemRoot.translationY = itemDashed.translationY.minus(itemRoot.height)
+                                    itemRoot.translationX = 0f
+                                }
+                                Gravity.CENTER -> {
+                                    itemDashed.visibility = View.VISIBLE
+                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_bottom)
+                                    itemDashed.translationX = layerWidth.div(2).toFloat()
+                                    itemDashed.translationY = targetViewSize.top.minus(120).toFloat()
+                                    itemRoot.visibility = View.VISIBLE
+                                    itemRoot.translationY = (itemDashed.translationY - itemRoot.height)-6
+                                    itemRoot.translationX = 0f
+                                }
+                                Gravity.END -> {
+                                    itemDashed.visibility = View.VISIBLE
+                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_end_bottom)
+                                    itemDashed.translationX = targetViewSize.left.minus(120).toFloat()
+                                    itemDashed.translationY = (targetViewSize.bottom.minus(itemDashed.bottom)).minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).toFloat()
+                                    itemRoot.visibility = View.VISIBLE
+                                    itemRoot.translationY = itemDashed.translationY.minus(itemRoot.height)
+                                    itemRoot.translationX = 0f
+                                }
+                                else -> {}
+                            }
                         }
                     }
                 }
-                when (mBuilder.getOverlayTransparentGravity()) {
-                    Gravity.CENTER -> mLayer?.drawCircle(
-                        targetViewSize.exactCenterX(),
-                        targetViewSize.exactCenterY(),
-                        radius,
-                        mOverlayTransparentPaint
-                    )
-                    Gravity.START -> mLayer?.drawCircle(
-                        targetViewSize.left.toFloat(),
-                        targetViewSize.exactCenterY(),
-                        radius,
-                        mOverlayTransparentPaint
-                    )
-                    Gravity.END -> mLayer?.drawCircle(
-                        targetViewSize.exactCenterX(),
-                        targetViewSize.right.toFloat(),
-                        radius,
-                        mOverlayTransparentPaint
-                    )
-                    else -> {}
-                }
             }
-            else -> {}
         }
+    }
+
+    private fun positionLeftMiddleRight(left: Int, right: Int ,halfWidth: Int): Gravity {
+        return if (halfWidth in left..right) {
+            Gravity.CENTER
+        }else if (left in 1 until halfWidth) {
+            Gravity.START
+        }else {
+            Gravity.END
+        }
+    }
+
+    private fun positionTopBottom(bottom: Int, halfHeight: Int) : Gravity {
+        return if (bottom in 1 until halfHeight) {
+            Gravity.TOP
+        }else {
+            Gravity.BOTTOM
+        }
+    }
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+
     }
 
     fun show(root: ViewGroup) {
@@ -127,12 +208,9 @@ class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context
         private var mOverlayColor: Int = Color.BLACK
         private var mOverlayOpacity: Int = 150
         private var mOverlayTransparentShape: Shape = Shape.BOX
-        private var mOverlayTransparentCircleRadius: Float = 0f
         private var mOverlayTransparentCornerRadius: Float = 8f
-        private var mOverlayTransparentGravity: Gravity = Gravity.CENTER
         private var mOverlayTransparentMargin: Rect = Rect()
         private var mOverlayTransparentPadding: Rect = Rect()
-        private var mOverLayType: ShapeType = ShapeType.OUTSIDE
         private var mOverlayClickListener: OverlayClickListener? = null
         private var mTargetCoordinates: Rect = Rect()
         private var mBaseTabPosition: Int = -1
@@ -141,10 +219,7 @@ class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context
         fun getOverlayColor(): Int = mOverlayColor
         fun getOverlayOpacity(): Int = mOverlayOpacity
         fun getOverlayTransparentShape(): Shape = mOverlayTransparentShape
-        fun getOverlayTransparentCircleRadius(): Float = mOverlayTransparentCircleRadius
         fun getOverlayTransparentCornerRadius(): Float = mOverlayTransparentCornerRadius
-        fun getOverlayTransparentGravity(): Gravity = mOverlayTransparentGravity
-        fun getOverLayType(): ShapeType = mOverLayType
         fun getTabPosition(): Int = mBaseTabPosition
         fun getOverlayTransparentMargin(): Rect = mOverlayTransparentMargin
         fun getOverlayTransparentPadding(): Rect = mOverlayTransparentPadding
@@ -180,7 +255,7 @@ class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context
         }
 
         fun build(): CoachMarkOverlay {
-            return CoachMarkOverlay(mContext, this)
+            return CoachMarkOverlay(mContext,this)
         }
     }
 
@@ -190,9 +265,7 @@ class CoachMarkOverlay(context: Context, builder: Builder) : FrameLayout(context
 }
 
 enum class Shape {
-    BOX,
-    CIRCLE,
-    TRIANGLE
+    BOX
 }
 
 enum class Gravity {
@@ -201,16 +274,4 @@ enum class Gravity {
     END,
     TOP,
     BOTTOM
-}
-
-enum class ShapeType {
-    INSIDE,
-    OUTSIDE
-}
-
-enum class Orientation {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
 }
