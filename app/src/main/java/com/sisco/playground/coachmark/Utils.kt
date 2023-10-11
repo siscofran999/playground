@@ -14,3 +14,15 @@ object Utils {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics)
     }
 }
+
+enum class Shape {
+    BOX
+}
+
+enum class Gravity {
+    CENTER,
+    START,
+    END,
+    TOP,
+    BOTTOM
+}

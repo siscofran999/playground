@@ -10,6 +10,14 @@ class CoachMarkSequence(private val mContext: Activity) {
     private val mSequenceQueue: Queue<CoachMarkOverlay.Builder> = LinkedList()
     var mCoachMark: CoachMarkOverlay? = null
     private var mSequenceItem: CoachMarkOverlay.Builder? = null
+
+    private val mCoachMarkSkipButtonClickListener: CoachMarkOverlay.SkipClickListener =
+        object : CoachMarkOverlay.SkipClickListener {
+            override fun onSkipClick(view: View) {
+                (mContext.window.decorView as ViewGroup).removeView(view)
+                mSequenceQueue.clear()
+            }
+        }
     private var mSequenceListener: SequenceListener = object : SequenceListener {
         override fun onNextItem(coachMark: CoachMarkOverlay, coachMarkSequence: CoachMarkSequence) {
             super.onNextItem(coachMark, coachMarkSequence)
@@ -28,8 +36,14 @@ class CoachMarkSequence(private val mContext: Activity) {
                     mSequenceItem?.apply {
                         overlay.mBuilder.setTabPosition(getTabPosition())
                         if (getOverlayTargetView() != null) {
+                            overlay.mBuilder.setInfoText(getTitle(), getSubTitle(), getLimit())
+                            overlay.mBuilder.setSkipBtn(getSkipBtn())
+                            overlay.mBuilder.setTextBtnPositive(getTextBtnPositive())
                             overlay.mBuilder.setOverlayTargetView(getOverlayTargetView())
                         } else {
+                            overlay.mBuilder.setInfoText("", "", "")
+                            overlay.mBuilder.setSkipBtn("null")
+                            overlay.mBuilder.setTextBtnPositive("")
                             overlay.mBuilder.setOverlayTargetView(null)
                             overlay.mBuilder.setOverlayTargetCoordinates(getOverlayTargetCoordinates())
                         }
@@ -54,10 +68,21 @@ class CoachMarkSequence(private val mContext: Activity) {
         mSequenceListener = listener
     }
 
-    fun addItem(targetView: View) {
+    fun addItem(
+        targetView: View,
+        title: String = "",
+        subTitle: String = "",
+        limit: String = "",
+        positiveButtonText: String = "Berikutnya",
+        skipButtonText: String = "Lewati"
+    ) {
         CoachMarkOverlay.Builder(mContext).apply {
             setOverlayClickListener(mCoachMarkOverlayClickListener)
+            setSkipClickListener(mCoachMarkSkipButtonClickListener)
             setOverlayTargetView(targetView)
+            setInfoText(title, subTitle, limit)
+            setTextBtnPositive(positiveButtonText)
+            setSkipBtn(skipButtonText)
             mSequenceQueue.add(this)
         }
     }

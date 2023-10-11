@@ -1,15 +1,9 @@
 package com.sisco.playground.coachmark
 
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.sisco.playground.R
 import com.sisco.playground.databinding.ActivityCoachMarkBinding
-import com.sisco.playground.databinding.ItemCoachmarkBinding
 
 
 class CoachMarkActivity : AppCompatActivity() {
@@ -22,14 +16,27 @@ class CoachMarkActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val coachMarkSequence = CoachMarkSequence(this)
-        coachMarkSequence.addItem(binding.txvTop)
-        coachMarkSequence.addItem(binding.txvStartTop)
-        coachMarkSequence.addItem(binding.txvEndTop)
-        coachMarkSequence.addItem(binding.txvStart)
-        coachMarkSequence.addItem(binding.txvEnd)
-        coachMarkSequence.addItem(binding.txvEndBottom)
-        coachMarkSequence.addItem(binding.txvStartBottom)
-        coachMarkSequence.addItem(binding.txvBottom)
-        coachMarkSequence.start(window?.decorView as ViewGroup)
+        coachMarkSequence.apply {
+            addItem(
+                binding.txvTop,
+                "Rekening & Kartu Kredit",
+                "Lihat informasi Akun Anda terkini melalui tab berikut:",
+                "1/3"
+            )
+            addItem(
+                binding.txvStartTop,
+                "Lihat Saldo & Rekening",
+                "Cek saldo anda dan berbagi nomor rekening dengan pengguna lainnya",
+                "2/3"
+            )
+            addItem(
+                binding.txvEndTop,
+                "Atur Kartu Kredit",
+                "Di sini Anda dapat mengatur kartu kredit sesuai dengan kebutuhan",
+                "3/3",
+                "Siap Jelajah!"
+            )
+            start(window?.decorView as ViewGroup)
+        }
     }
 }

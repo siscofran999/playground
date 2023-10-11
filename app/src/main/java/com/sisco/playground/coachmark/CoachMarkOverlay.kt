@@ -1,5 +1,6 @@
 package com.sisco.playground.coachmark
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.util.Log
@@ -33,6 +34,12 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
                 mShouldRender = true
             }
         }
+
+        binding.btnSkip.setOnClickListener {
+            mBuilder.getSkipClickListener()?.apply {
+                onSkipClick(this@CoachMarkOverlay)
+            }
+        }
     }
 
     override fun invalidate() {
@@ -60,7 +67,7 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
     }
 
     private fun drawTransparentOverlay() {
-        mLayer?.let {layer ->
+        mLayer?.let { layer ->
             val targetViewSize = Rect()
             if (mBuilder.getOverlayTargetView() != null) {
                 mBuilder.getOverlayTargetView()?.getGlobalVisibleRect(targetViewSize)
@@ -107,6 +114,22 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
                     Log.i("TAG", "drawTransparentOverlay position: $leftMiddleRight")
                     Log.i("TAG", "drawTransparentOverlay position: $topBottom")
                     binding.apply {
+                        txvTitle.text = mBuilder.getTitle()
+                        txvSubTitle.text = mBuilder.getSubTitle()
+                        if (mBuilder.getLimit().isEmpty()) {
+                            txvLimit.visibility = View.GONE
+                        }else {
+                            txvLimit.apply {
+                                text = mBuilder.getLimit()
+                                visibility = View.VISIBLE
+                            }
+                        }
+//                        btnNext.visibility = View.VISIBLE
+                        btnNext.text = mBuilder.getTextBtnPositive()
+                        if (mBuilder.getSkipBtn() == "null") {
+                            btnSkip.visibility = View.GONE
+                        }else btnSkip.text = mBuilder.getSkipBtn()
+                        Log.i("TAG", "drawTransparentOverlay: btnText -> ${mBuilder.getTextBtnPositive()}")
                         if (topBottom == Gravity.TOP) {
                             when(leftMiddleRight) {
                                 Gravity.START -> {
@@ -212,8 +235,14 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
         private var mOverlayTransparentMargin: Rect = Rect()
         private var mOverlayTransparentPadding: Rect = Rect()
         private var mOverlayClickListener: OverlayClickListener? = null
+        private var mSkipClickListener: SkipClickListener? = null
         private var mTargetCoordinates: Rect = Rect()
         private var mBaseTabPosition: Int = -1
+        private var mSetTitle: String = ""
+        private var mSetSubTitle: String = ""
+        private var mLimit: String = ""
+        private var mTextBtnPositive: String = ""
+        private var mSkipBtn: String = ""
 
         fun getOverlayTargetView(): View? = mOverlayTargetView
         fun getOverlayColor(): Int = mOverlayColor
@@ -225,6 +254,12 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
         fun getOverlayTransparentPadding(): Rect = mOverlayTransparentPadding
         fun getOverlayTargetCoordinates(): Rect = mTargetCoordinates
         fun getOverlayClickListener(): OverlayClickListener? = mOverlayClickListener
+        fun getSkipClickListener(): SkipClickListener? = mSkipClickListener
+        fun getTitle(): String = mSetTitle
+        fun getSubTitle(): String = mSetSubTitle
+        fun getLimit(): String = mLimit
+        fun getTextBtnPositive(): String = mTextBtnPositive
+        fun getSkipBtn(): String = mSkipBtn
 
         fun setOverlayTargetCoordinates(coordinates: Rect): Builder {
             mTargetCoordinates.set(coordinates)
@@ -254,6 +289,29 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
             return this
         }
 
+        fun setSkipClickListener(listener: SkipClickListener): Builder {
+            mSkipClickListener = listener
+            return this
+        }
+
+        fun setInfoText(title: String, subTitle: String, limit: String): Builder {
+            mSetTitle = title
+            mSetSubTitle = subTitle
+            mLimit = limit
+            return this
+        }
+
+        fun setTextBtnPositive(text: String): Builder {
+            mTextBtnPositive = text
+            Log.i("TAG", "setTextBtnPositive: $text")
+            return this
+        }
+
+        fun setSkipBtn(text: String): Builder {
+            mSkipBtn = text
+            return this
+        }
+
         fun build(): CoachMarkOverlay {
             return CoachMarkOverlay(mContext,this)
         }
@@ -262,16 +320,8 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
     interface OverlayClickListener {
         fun onOverlayClick(overlay: CoachMarkOverlay)
     }
-}
 
-enum class Shape {
-    BOX
-}
-
-enum class Gravity {
-    CENTER,
-    START,
-    END,
-    TOP,
-    BOTTOM
+    interface SkipClickListener {
+        fun onSkipClick(view: View)
+    }
 }
