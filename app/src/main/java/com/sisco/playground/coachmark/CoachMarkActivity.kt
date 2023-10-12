@@ -2,6 +2,7 @@ package com.sisco.playground.coachmark
 
 import android.os.Bundle
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.sisco.playground.databinding.ActivityCoachMarkBinding
 
@@ -15,7 +16,9 @@ class CoachMarkActivity : AppCompatActivity() {
         binding = ActivityCoachMarkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val coachMarkSequence = CoachMarkSequence(this)
+        val coachMarkSequence = CoachMarkSequence(this, onFinish = {
+            Toast.makeText(this, "muncul gak lu", Toast.LENGTH_SHORT).show()
+        })
         coachMarkSequence.apply {
             addItem(
                 binding.txvTop,
