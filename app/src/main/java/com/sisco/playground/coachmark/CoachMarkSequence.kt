@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import java.util.*
 
-class CoachMarkSequence(private val mContext: Activity) {
+class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
 
     private val mSequenceQueue: Queue<CoachMarkOverlay.Builder> = LinkedList()
     var mCoachMark: CoachMarkOverlay? = null
@@ -53,6 +53,7 @@ class CoachMarkSequence(private val mContext: Activity) {
                     }
                 } else {
                     (mContext.window.decorView as ViewGroup).removeView(overlay)
+                    onFinish.invoke()
                 }
             }
         }

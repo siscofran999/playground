@@ -1,6 +1,5 @@
 package com.sisco.playground.coachmark
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.util.Log
@@ -31,7 +30,6 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
         binding.btnNext.setOnClickListener {
             mBuilder.getOverlayClickListener()?.apply {
                 onOverlayClick(this@CoachMarkOverlay)
-                mShouldRender = true
             }
         }
 
@@ -43,11 +41,9 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
     }
 
     override fun invalidate() {
-        mShouldRender = true
         super.invalidate()
     }
 
-    private var mShouldRender = true
     override fun onDraw(canvas: Canvas?) {
         drawOverlayTint()
         drawTransparentOverlay()
