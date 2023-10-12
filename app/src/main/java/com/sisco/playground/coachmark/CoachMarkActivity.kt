@@ -17,7 +17,7 @@ class CoachMarkActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val coachMarkSequence = CoachMarkSequence(this, onFinish = {
-            Toast.makeText(this, "muncul gak lu", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "muncull gak lu", Toast.LENGTH_SHORT).show()
         })
         coachMarkSequence.apply {
             addItem(
