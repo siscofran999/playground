@@ -11,9 +11,10 @@ import com.sisco.playground.R
 import com.sisco.playground.databinding.ItemCoachmarkBinding
 import kotlin.math.roundToInt
 
-class CoachMarkOverlay constructor(private val mContext: Context, builder: Builder) : FrameLayout(mContext) {
+class CoachMarkOverlay : FrameLayout{
 
-    var mBuilder: Builder
+    var mBuilder: Builder? = null
+    private var mContext: Context? = null
     private var mBaseBitmap: Bitmap? = null
     private var mLayer: Canvas? = null
     private val mOverlayTintPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -21,20 +22,28 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
 
     private val binding = ItemCoachmarkBinding.inflate(LayoutInflater.from(mContext), this, true)
 
+    constructor(context: Context): super(context) {
+        this.mContext = context
+    }
+
+    constructor(context: Context, builder: Builder): this(context) {
+        this.mContext = context
+        this.mBuilder = builder
+    }
+
     init {
         this.setWillNotDraw(false)
-        mBuilder = builder
         mOverlayTransparentPaint.color = Color.TRANSPARENT
         mOverlayTransparentPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
         // hide
         binding.btnNext.setOnClickListener {
-            mBuilder.getOverlayClickListener()?.apply {
+            mBuilder?.getOverlayClickListener()?.apply {
                 onOverlayClick(this@CoachMarkOverlay)
             }
         }
 
         binding.btnSkip.setOnClickListener {
-            mBuilder.getSkipClickListener()?.apply {
+            mBuilder?.getSkipClickListener()?.apply {
                 onSkipClick(this@CoachMarkOverlay)
             }
         }
@@ -51,34 +60,34 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
         super.onDraw(canvas)
     }
 
-    private fun drawOverlayTint() {
+    private fun drawOverlayTint() = mBuilder?.apply {
         mBaseBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         mBaseBitmap?.apply {
             mLayer = Canvas(this)
-            mOverlayTintPaint.color = mBuilder.getOverlayColor()
-            val alpha = mBuilder.getOverlayOpacity()
+            mOverlayTintPaint.color = getOverlayColor()
+            val alpha = getOverlayOpacity()
             mOverlayTintPaint.alpha = alpha
             mLayer?.drawRect(Rect(0, 0, width, height), mOverlayTintPaint)
         }
     }
 
-    private fun drawTransparentOverlay() {
+    private fun drawTransparentOverlay() = mBuilder?.apply {
         mLayer?.let { layer ->
             val targetViewSize = Rect()
-            if (mBuilder.getOverlayTargetView() != null) {
-                mBuilder.getOverlayTargetView()?.getGlobalVisibleRect(targetViewSize)
+            if (getOverlayTargetView() != null) {
+                getOverlayTargetView()?.getGlobalVisibleRect(targetViewSize)
             } else {
-                targetViewSize.set(mBuilder.getOverlayTargetCoordinates())
+                targetViewSize.set(getOverlayTargetCoordinates())
             }
-            targetViewSize.left -= mBuilder.getOverlayTransparentPadding().left
-            targetViewSize.top -= mBuilder.getOverlayTransparentPadding().top
-            targetViewSize.right += mBuilder.getOverlayTransparentPadding().right
-            targetViewSize.bottom += mBuilder.getOverlayTransparentPadding().bottom
+            targetViewSize.left -= getOverlayTransparentPadding().left
+            targetViewSize.top -= getOverlayTransparentPadding().top
+            targetViewSize.right += getOverlayTransparentPadding().right
+            targetViewSize.bottom += getOverlayTransparentPadding().bottom
 
-            targetViewSize.left += mBuilder.getOverlayTransparentMargin().left
-            targetViewSize.top += mBuilder.getOverlayTransparentMargin().top
-            targetViewSize.right += mBuilder.getOverlayTransparentMargin().right
-            targetViewSize.bottom += mBuilder.getOverlayTransparentMargin().bottom
+            targetViewSize.left += getOverlayTransparentMargin().left
+            targetViewSize.top += getOverlayTransparentMargin().top
+            targetViewSize.right += getOverlayTransparentMargin().right
+            targetViewSize.bottom += getOverlayTransparentMargin().bottom
 
             Log.i("TAG", "drawTransparentOverlay: $targetViewSize")
             Log.i("TAG", "drawTransparentOverlay top: ${targetViewSize.top}")
@@ -89,12 +98,12 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
             Log.i("TAG", "drawTransparentOverlay x: ${targetViewSize.exactCenterX()}")
             val layerWidth = layer.width
             val layerHeight = layer.height
-            when (mBuilder.getOverlayTransparentShape()) {
+            when (getOverlayTransparentShape()) {
                 Shape.BOX -> {
                     layer.drawRoundRect(
                         RectF(targetViewSize),
-                        mBuilder.getOverlayTransparentCornerRadius(),
-                        mBuilder.getOverlayTransparentCornerRadius(),
+                        getOverlayTransparentCornerRadius(),
+                        getOverlayTransparentCornerRadius(),
                         mOverlayTransparentPaint
                     )
 
@@ -110,22 +119,21 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
                     Log.i("TAG", "drawTransparentOverlay position: $leftMiddleRight")
                     Log.i("TAG", "drawTransparentOverlay position: $topBottom")
                     binding.apply {
-                        txvTitle.text = mBuilder.getTitle()
-                        txvSubTitle.text = mBuilder.getSubTitle()
-                        if (mBuilder.getLimit().isEmpty()) {
+                        txvTitle.text = getTitle()
+                        txvSubTitle.text = getSubTitle()
+                        if (getLimit().isEmpty()) {
                             txvLimit.visibility = View.GONE
                         }else {
                             txvLimit.apply {
-                                text = mBuilder.getLimit()
+                                text = getLimit()
                                 visibility = View.VISIBLE
                             }
                         }
-//                        btnNext.visibility = View.VISIBLE
-                        btnNext.text = mBuilder.getTextBtnPositive()
-                        if (mBuilder.getSkipBtn() == "null") {
+                        btnNext.text = getTextBtnPositive()
+                        if (getSkipBtn() == "null") {
                             btnSkip.visibility = View.GONE
-                        }else btnSkip.text = mBuilder.getSkipBtn()
-                        Log.i("TAG", "drawTransparentOverlay: btnText -> ${mBuilder.getTextBtnPositive()}")
+                        }else btnSkip.text = getSkipBtn()
+                        Log.i("TAG", "drawTransparentOverlay: btnText -> ${getTextBtnPositive()}")
                         if (topBottom == Gravity.TOP) {
                             when(leftMiddleRight) {
                                 Gravity.START -> {
@@ -309,7 +317,7 @@ class CoachMarkOverlay constructor(private val mContext: Context, builder: Build
         }
 
         fun build(): CoachMarkOverlay {
-            return CoachMarkOverlay(mContext,this)
+            return CoachMarkOverlay(mContext, this)
         }
     }
 

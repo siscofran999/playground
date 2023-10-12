@@ -29,26 +29,28 @@ class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
             override fun onOverlayClick(overlay: CoachMarkOverlay) {
                 mCoachMark = overlay
                 if (mSequenceQueue.size > 0) {
-                    mSequenceItem = mSequenceQueue.poll()
-                    if (mSequenceQueue.isEmpty()) {
-                        overlay.mBuilder.setOverlayTransparentPadding(0, 0, 0, 0)
-                    }
-                    mSequenceItem?.apply {
-                        overlay.mBuilder.setTabPosition(getTabPosition())
-                        if (getOverlayTargetView() != null) {
-                            overlay.mBuilder.setInfoText(getTitle(), getSubTitle(), getLimit())
-                            overlay.mBuilder.setSkipBtn(getSkipBtn())
-                            overlay.mBuilder.setTextBtnPositive(getTextBtnPositive())
-                            overlay.mBuilder.setOverlayTargetView(getOverlayTargetView())
-                        } else {
-                            overlay.mBuilder.setInfoText("", "", "")
-                            overlay.mBuilder.setSkipBtn("null")
-                            overlay.mBuilder.setTextBtnPositive("")
-                            overlay.mBuilder.setOverlayTargetView(null)
-                            overlay.mBuilder.setOverlayTargetCoordinates(getOverlayTargetCoordinates())
+                    overlay.mBuilder?.apply {
+                        mSequenceItem = mSequenceQueue.poll()
+                        if (mSequenceQueue.isEmpty()) {
+                            setOverlayTransparentPadding(0, 0, 0, 0)
                         }
-                        mSequenceListener.apply {
-                            onNextItem(overlay, this@CoachMarkSequence)
+                        mSequenceItem?.apply {
+                            setTabPosition(getTabPosition())
+                            if (getOverlayTargetView() != null) {
+                                setInfoText(getTitle(), getSubTitle(), getLimit())
+                                setSkipBtn(getSkipBtn())
+                                setTextBtnPositive(getTextBtnPositive())
+                                setOverlayTargetView(getOverlayTargetView())
+                            } else {
+                                setInfoText("", "", "")
+                                setSkipBtn("null")
+                                setTextBtnPositive("")
+                                setOverlayTargetView(null)
+                                setOverlayTargetCoordinates(getOverlayTargetCoordinates())
+                            }
+                            mSequenceListener.apply {
+                                onNextItem(overlay, this@CoachMarkSequence)
+                            }
                         }
                     }
                 } else {
@@ -63,10 +65,6 @@ class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
         if (mCoachMark != null && mSequenceItem != null) {
             mCoachMark?.invalidate()
         }
-    }
-
-    fun setSequenceListener(listener: SequenceListener) {
-        mSequenceListener = listener
     }
 
     fun addItem(
