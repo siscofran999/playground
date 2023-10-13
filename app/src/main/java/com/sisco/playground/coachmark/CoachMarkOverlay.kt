@@ -214,8 +214,6 @@ class CoachMarkOverlay : FrameLayout{
                                     itemDashed.translationX = targetViewSize.left.toFloat().plus(30)
                                     itemDashed.translationY = targetViewSize.bottom.plus(30).toFloat()
                                     itemRoot.visibility = View.VISIBLE
-                                    Log.i("TAG", "drawTransparentOverlay: ${itemDashed.translationY} ${itemDashed.height} = ${itemDashed.translationY.plus(itemDashed.height)}")
-//                                    itemDashed.translationY.plus(itemDashed.height)
                                     itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
                                     itemRoot.translationX = 0f
                                 }
