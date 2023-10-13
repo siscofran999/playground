@@ -24,5 +24,6 @@ enum class Gravity {
     START,
     END,
     TOP,
-    BOTTOM
+    BOTTOM,
+    NULL
 }

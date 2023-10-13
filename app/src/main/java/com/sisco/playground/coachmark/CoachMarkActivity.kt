@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.sisco.playground.databinding.ActivityCoachMarkBinding
 
-
 class CoachMarkActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCoachMarkBinding
@@ -16,9 +15,7 @@ class CoachMarkActivity : AppCompatActivity() {
         binding = ActivityCoachMarkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val coachMarkSequence = CoachMarkSequence(this, onFinish = {
-            Toast.makeText(this, "muncull gak lu", Toast.LENGTH_SHORT).show()
-        })
+        val coachMarkSequence = CoachMarkSequence(this)
         coachMarkSequence.apply {
             addItem(
                 binding.txvTop,
@@ -37,9 +34,12 @@ class CoachMarkActivity : AppCompatActivity() {
                 "Atur Kartu Kredit",
                 "Di sini Anda dapat mengatur kartu kredit sesuai dengan kebutuhan",
                 "3/3",
-                "Siap Jelajah!"
+                "Siap Jelajah!", null
             )
             start(window?.decorView as ViewGroup)
+            setOnFinishCallback {
+                Toast.makeText(this@CoachMarkActivity, "muncull gakk sihh", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

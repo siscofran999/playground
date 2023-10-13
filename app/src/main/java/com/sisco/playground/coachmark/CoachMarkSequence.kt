@@ -5,11 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import java.util.*
 
-class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
+class CoachMarkSequence(private val mContext: Activity) {
 
     private val mSequenceQueue: Queue<CoachMarkOverlay.Builder> = LinkedList()
     var mCoachMark: CoachMarkOverlay? = null
     private var mSequenceItem: CoachMarkOverlay.Builder? = null
+    private var onFinishCallback: OnFinishCallback? = null
 
     private val mCoachMarkSkipButtonClickListener: CoachMarkOverlay.SkipClickListener =
         object : CoachMarkOverlay.SkipClickListener {
@@ -31,29 +32,35 @@ class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
                 if (mSequenceQueue.size > 0) {
                     mSequenceItem = mSequenceQueue.poll()
                     if (mSequenceQueue.isEmpty()) {
-                        overlay.mBuilder.setOverlayTransparentPadding(0, 0, 0, 0)
+                        overlay.mBuilder?.setOverlayTransparentPadding(0, 0, 0, 0)
                     }
                     mSequenceItem?.apply {
-                        overlay.mBuilder.setTabPosition(getTabPosition())
-                        if (overlay.mBuilder.getOverlayTargetView() != null) {
-                            overlay.mBuilder.setInfoText(getTitle(), getSubTitle(), getLimit())
-                            overlay.mBuilder.setSkipBtn(getSkipBtn())
-                            overlay.mBuilder.setTextBtnPositive(getTextBtnPositive())
-                            overlay.mBuilder.setOverlayTargetView(getOverlayTargetView())
-                        } else {
-                            overlay.mBuilder.setInfoText("", "", "")
-                            overlay.mBuilder.setSkipBtn("null")
-                            overlay.mBuilder.setTextBtnPositive("")
-                            overlay.mBuilder.setOverlayTargetView(null)
-                            overlay.mBuilder.setOverlayTargetCoordinates(getOverlayTargetCoordinates())
-                        }
-                        mSequenceListener.apply {
-                            onNextItem(overlay, this@CoachMarkSequence)
+                        overlay.mBuilder?.let { builder ->
+                            builder.setTabPosition(getTabPosition())
+                            if (builder.getOverlayTargetView() != null) {
+                                builder.setInfoText(getTitle(), getSubTitle(), getLimit())
+                                builder.setSkipBtn(getSkipBtn())
+                                builder.setTextBtnPositive(getTextBtnPositive())
+                                builder.setOverlayTargetView(getOverlayTargetView())
+                                builder.setGravityTopBottom(getGravityTopBottom())
+                                builder.setGravityStartEnd(getGravityStartEnd())
+                            } else {
+                                builder.setInfoText("", "", "")
+                                builder.setSkipBtn("null")
+                                builder.setTextBtnPositive("")
+                                builder.setOverlayTargetView(null)
+                                builder.setGravityTopBottom(Gravity.NULL)
+                                builder.setGravityStartEnd(Gravity.NULL)
+                                builder.setOverlayTargetCoordinates(getOverlayTargetCoordinates())
+                            }
+                            mSequenceListener.apply {
+                                onNextItem(overlay, this@CoachMarkSequence)
+                            }
                         }
                     }
                 } else {
                     (mContext.window.decorView as ViewGroup).removeView(overlay)
-                    onFinish.invoke()
+                    onFinishCallback?.onFinish()
                 }
             }
         }
@@ -71,7 +78,9 @@ class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
         subTitle: String = "",
         limit: String = "",
         positiveButtonText: String = "Berikutnya",
-        skipButtonText: String = "Lewati"
+        skipButtonText: String? = "Lewati",
+        gravityTopBottom: Gravity = Gravity.NULL,
+        gravityStartEnd: Gravity = Gravity.NULL
     ) {
         CoachMarkOverlay.Builder(mContext).apply {
             setOverlayClickListener(mCoachMarkOverlayClickListener)
@@ -80,6 +89,8 @@ class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
             setInfoText(title, subTitle, limit)
             setTextBtnPositive(positiveButtonText)
             setSkipBtn(skipButtonText)
+            setGravityTopBottom(gravityTopBottom)
+            setGravityStartEnd(gravityStartEnd)
             mSequenceQueue.add(this)
         }
     }
@@ -93,5 +104,13 @@ class CoachMarkSequence(private val mContext: Activity, onFinish: () -> Unit) {
                 firstElement?.build()?.show(rootView)
             }
         }
+    }
+
+    fun setOnFinishCallback(onFinishCallback: OnFinishCallback) {
+        this.onFinishCallback = onFinishCallback
+    }
+
+    fun interface OnFinishCallback {
+        fun onFinish()
     }
 }
