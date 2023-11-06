@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/itemDashed"
@@ -18,8 +24,8 @@
         android:layout_marginHorizontal="26dp"
         android:padding="20dp"
         android:visibility="gone"
-        android:layout_height="154dp"
-        android:background="@drawable/bg_coachmark" >
+        android:layout_height="wrap_content"
+        android:background="@color/white" >
 
         <TextView
             android:id="@+id/txvTitle"
@@ -37,7 +43,6 @@
             android:layout_height="wrap_content"
             tools:text="Lihat informasi Akun Anda terkini melalui tab berikut."
             android:layout_below="@id/txvTitle"
-            android:layout_above="@id/btnNext"
             android:layout_marginTop="4dp"
             android:textSize="14sp"
             android:textColor="#152a4c"/>
@@ -47,32 +52,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_marginBottom="6dp"
             android:textSize="10sp"
             tools:text="(1/5)"
-            tools:ignore="SmallSp" />
+            tools:ignore="SmallSp"
+            android:layout_above="@id/txvSubTitle"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cornerRadius="@dimen/dimen_10dp"
+            app:backgroundTint="@color/white"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/black"
+            app:strokeColor="@color/colorGraySoft"
+            tools:text="Skip"
+            android:textAllCaps="false"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/txvSubTitle"/>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="#dba621"
-            tools:text="Berikutnya"
+            app:cornerRadius="@dimen/dimen_10dp"
+            tools:text="Next"
             android:textAllCaps="false"
+            android:layout_marginTop="20dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="20dp"/>
-
-        <Button
-            android:id="@+id/btnSkip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#ff12"
-            tools:text="Lewati"
-            android:textAllCaps="false"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/txvSubTitle"
             android:layout_marginEnd="20dp"/>
 
     </RelativeLayout>
 
-</RelativeLayout>
+</FrameLayout>

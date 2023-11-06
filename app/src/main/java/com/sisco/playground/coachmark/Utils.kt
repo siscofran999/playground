@@ -2,6 +2,8 @@ package com.sisco.playground.coachmark
 
 import android.content.Context
 import android.util.TypedValue
+import android.view.View
+import com.sisco.playground.databinding.ItemCoachmarkBinding
 
 object Utils {
 
@@ -15,14 +17,31 @@ object Utils {
     }
 }
 
+interface OverlayClickListener {
+    fun onOverlayClick(overlay: CoachMarkOverlay, binding: ItemCoachmarkBinding)
+}
+
+interface SkipClickListener {
+    fun onSkipClick(view: View)
+}
+
 enum class Shape {
     BOX
 }
 
-enum class Gravity {
+enum class GravityIn {
     CENTER,
     START,
     END,
+    TOP,
+    BOTTOM
+}
+
+enum class Gravity {
+    START_TOP,
+    END_TOP,
+    START_BOTTOM,
+    END_BOTTOM,
     TOP,
     BOTTOM,
     NULL

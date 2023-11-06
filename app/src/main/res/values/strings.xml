@@ -12,4 +12,7 @@
     <string name="label_ini_label_coachMark_top">ini label coachMark top</string>
     <string name="start">start</string>
     <string name="end">end</string>
+    <string name="label_value_limit">%s/%s</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
 </resources>

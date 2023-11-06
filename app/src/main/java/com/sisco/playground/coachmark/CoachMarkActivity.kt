@@ -20,25 +20,37 @@ class CoachMarkActivity : AppCompatActivity() {
             addItem(
                 binding.txvTop,
                 "Rekening & Kartu Kredit",
-                "Lihat informasi Akun Anda terkini melalui tab berikut:",
-                "1/3"
+                "Lihat informasi Akun Anda terkini melalui tab berikut:"
             )
             addItem(
                 binding.txvStartTop,
                 "Lihat Saldo & Rekening",
-                "Cek saldo anda dan berbagi nomor rekening dengan pengguna lainnya",
-                "2/3"
+                "Cek saldo anda dan berbagi nomor rekening dengan pengguna lainnya"
             )
             addItem(
                 binding.txvEndTop,
                 "Atur Kartu Kredit",
+                "Di sini Anda dapat mengatur kartu kredit sesuai dengan kebutuhan"
+            )
+            addItem(
+                binding.txvEndBottom,
+                "Atur Kartu Kredit",
+                "Di sini Anda dapat mengatur kartu kredit sesuai dengan kebutuhan"
+            )
+            addItem(
+                binding.txvStartBottom,
+                "Atur Kartu Kredit",
+                "Di sini Anda dapat mengatur kartu kredit sesuai dengan kebutuhan"
+            )
+            addItem(
+                binding.txvBottom,
+                "Atur Kartu Kredit",
                 "Di sini Anda dapat mengatur kartu kredit sesuai dengan kebutuhan",
-                "3/3",
-                "Siap Jelajah!", null
+                "Siap Jelajah"
             )
             start(window?.decorView as ViewGroup)
             setOnFinishCallback {
-                Toast.makeText(this@CoachMarkActivity, "muncull gakk sihh", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@CoachMarkActivity, "Finish", Toast.LENGTH_SHORT).show()
             }
         }
     }

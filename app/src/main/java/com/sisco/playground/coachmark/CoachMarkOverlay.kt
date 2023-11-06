@@ -2,7 +2,6 @@ package com.sisco.playground.coachmark
 
 import android.content.Context
 import android.graphics.*
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,25 +31,24 @@ class CoachMarkOverlay : FrameLayout{
     }
 
     private fun init() {
+        binding.view.visibility = View.VISIBLE
+        binding.view.setOnClickListener(null)
         this.setWillNotDraw(false)
         mOverlayTransparentPaint.color = Color.TRANSPARENT
         mOverlayTransparentPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)
         // hide
         binding.btnNext.setOnClickListener {
             mBuilder?.getOverlayClickListener()?.apply {
-                onOverlayClick(this@CoachMarkOverlay)
+                onOverlayClick(this@CoachMarkOverlay, binding)
             }
         }
 
         binding.btnSkip.setOnClickListener {
             mBuilder?.getSkipClickListener()?.apply {
                 onSkipClick(this@CoachMarkOverlay)
+                binding.view.visibility = View.GONE
             }
         }
-    }
-
-    override fun invalidate() {
-        super.invalidate()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -71,6 +69,7 @@ class CoachMarkOverlay : FrameLayout{
         }
     }
 
+    // master mine
     private fun drawTransparentOverlay() = mBuilder?.apply{
         mLayer?.let { layer ->
             val targetViewSize = Rect()
@@ -89,13 +88,6 @@ class CoachMarkOverlay : FrameLayout{
             targetViewSize.right += getOverlayTransparentMargin().right
             targetViewSize.bottom += getOverlayTransparentMargin().bottom
 
-            Log.i("TAG", "drawTransparentOverlay: $targetViewSize")
-            Log.i("TAG", "drawTransparentOverlay top: ${targetViewSize.top}")
-            Log.i("TAG", "drawTransparentOverlay left: ${targetViewSize.left}")
-            Log.i("TAG", "drawTransparentOverlay right: ${targetViewSize.right}")
-            Log.i("TAG", "drawTransparentOverlay bottom: ${targetViewSize.bottom}")
-            Log.i("TAG", "drawTransparentOverlay y: ${targetViewSize.exactCenterY()}")
-            Log.i("TAG", "drawTransparentOverlay x: ${targetViewSize.exactCenterX()}")
             val layerWidth = layer.width
             val layerHeight = layer.height
             when (getOverlayTransparentShape()) {
@@ -107,33 +99,20 @@ class CoachMarkOverlay : FrameLayout{
                         mOverlayTransparentPaint
                     )
 
-                    Log.i("TAG", "drawTransparentOverlay width screen: $layerWidth")
-                    Log.i("TAG", "drawTransparentOverlay height screen: $layerHeight")
                     val halfWidthScreen = layerWidth/2
                     val halfHeightScreen = layerHeight/2
-                    Log.i("TAG", "drawTransparentOverlay half width screen: $halfWidthScreen")
-                    Log.i("TAG", "drawTransparentOverlay half height screen: $halfHeightScreen")
 
-                    var startMiddleEnd = positionLeftMiddleRight(targetViewSize.left, targetViewSize.right ,halfWidthScreen)
-                    var topBottom = positionTopBottom(targetViewSize.bottom, halfHeightScreen)
+                    val startMiddleEnd = positionLeftMiddleRight(targetViewSize.left, targetViewSize.right ,halfWidthScreen)
+                    val topBottom = positionTopBottom(targetViewSize.bottom, halfHeightScreen)
 
-                    if (getGravityTopBottom() != Gravity.NULL) {
-                        topBottom = getGravityTopBottom()
-                    }
-                    if (getGravityStartEnd() != Gravity.NULL) {
-                        startMiddleEnd = getGravityStartEnd()
-                    }
-
-                    Log.i("TAG", "drawTransparentOverlay position: $startMiddleEnd")
-                    Log.i("TAG", "drawTransparentOverlay position: $topBottom")
                     binding.apply {
                         txvTitle.text = getTitle()
                         txvSubTitle.text = getSubTitle()
-                        if (getLimit().isEmpty()) {
+                        if (getMax() == 0) {
                             txvLimit.visibility = View.GONE
                         }else {
                             txvLimit.apply {
-                                text = getLimit()
+                                text = mContext?.getString(R.string.label_value_limit, getLimit().plus(1).toString(), getMax().plus(1).toString())
                                 visibility = View.VISIBLE
                             }
                         }
@@ -141,85 +120,73 @@ class CoachMarkOverlay : FrameLayout{
                         if (getSkipBtn() == null) {
                             btnSkip.visibility = View.GONE
                         }else btnSkip.text = getSkipBtn()
-                        Log.i("TAG", "drawTransparentOverlay: btnText -> ${getTextBtnPositive()}")
-                        when(topBottom) {
-                            Gravity.TOP -> {
-                                when(startMiddleEnd) {
-                                    Gravity.START -> {
-                                        itemDashed.visibility = View.VISIBLE
-                                        itemDashed.setImageResource(R.drawable.img_dashed_coachmark_left)
-                                        itemDashed.translationX = targetViewSize.right.plus(30).toFloat()
-                                        itemDashed.translationY = targetViewSize.bottom.minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).toFloat()
-                                        itemRoot.visibility = View.VISIBLE
-                                        itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
-                                        itemRoot.translationX = 0f
+                        if (getGravity() == Gravity.NULL) {
+                            // automatic
+                            when(topBottom) {
+                                GravityIn.TOP -> {
+                                    when(startMiddleEnd) {
+                                        GravityIn.START -> {
+                                            GravityHelper.EndBottomGravity()
+                                                .gravity(this, targetViewSize)
+                                        }
+                                        GravityIn.CENTER -> {
+                                            GravityHelper.BottomGravity()
+                                                .gravity(this, targetViewSize)
+                                        }
+                                        GravityIn.END -> {
+                                            GravityHelper.StartBottomGravity()
+                                                .gravity(this, targetViewSize)
+                                        }
+                                        else -> {}
                                     }
-                                    Gravity.CENTER -> {
-                                        itemDashed.visibility = View.VISIBLE
-                                        itemDashed.translationX = layerWidth.div(2).toFloat()
-                                        itemDashed.translationY = targetViewSize.bottom.plus(30).toFloat()
-                                        itemDashed.setImageResource(R.drawable.img_dashed_coachmark_top)
-                                        itemRoot.visibility = View.VISIBLE
-                                        itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
-                                        itemRoot.translationX = 0f
-                                    }
-                                    Gravity.END -> {
-                                        itemDashed.visibility = View.VISIBLE
-                                        itemDashed.setImageResource(R.drawable.img_dashed_coachmark_right)
-                                        itemDashed.translationX = targetViewSize.left.minus(120).toFloat()
-                                        itemDashed.translationY = targetViewSize.bottom.minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).toFloat()
-                                        itemRoot.visibility = View.VISIBLE
-                                        itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
-                                        itemRoot.translationX = 0f
-                                    }
-                                    else -> {}
                                 }
-                            }
-                            Gravity.BOTTOM -> {
-                                when(startMiddleEnd) {
-                                    Gravity.START -> {
-                                        itemDashed.visibility = View.VISIBLE
-                                        itemDashed.setImageResource(R.drawable.img_dashed_coachmark_left_bottom)
-                                        itemDashed.translationX = targetViewSize.right.plus(30).toFloat()
-                                        itemDashed.translationY = (targetViewSize.bottom.minus(itemDashed.height)).minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).plus(4).toFloat()
-                                        itemRoot.visibility = View.VISIBLE
-                                        itemRoot.translationY = itemDashed.translationY.minus(itemRoot.height)
-                                        itemRoot.translationX = 0f
+                                GravityIn.BOTTOM -> {
+                                    when(startMiddleEnd) {
+                                        GravityIn.START -> {
+                                            GravityHelper.EndTopGravity()
+                                                .gravity(this, targetViewSize)
+                                        }
+                                        GravityIn.CENTER -> {
+                                            GravityHelper.TopGravity().gravity(this, targetViewSize)
+                                        }
+                                        GravityIn.END -> {
+                                            GravityHelper.StartTopGravity()
+                                                .gravity(this, targetViewSize)
+                                        }
+                                        else -> {}
                                     }
-                                    Gravity.CENTER -> {
-                                        itemDashed.visibility = View.VISIBLE
-                                        itemDashed.setImageResource(R.drawable.img_dashed_coachmark_bottom)
-                                        itemDashed.translationX = layerWidth.div(2).toFloat()
-                                        itemDashed.translationY = targetViewSize.top.minus(120).toFloat()
-                                        itemRoot.visibility = View.VISIBLE
-                                        itemRoot.translationY = (itemDashed.translationY - itemRoot.height)-6
-                                        itemRoot.translationX = 0f
-                                    }
-                                    Gravity.END -> {
-                                        itemDashed.visibility = View.VISIBLE
-                                        itemDashed.setImageResource(R.drawable.img_dashed_coachmark_end_bottom)
-                                        itemDashed.translationX = targetViewSize.left.minus(120).toFloat()
-                                        itemDashed.translationY = (targetViewSize.bottom.minus(itemDashed.bottom)).minus(targetViewSize.bottom.minus(targetViewSize.top).div(2)).toFloat()
-                                        itemRoot.visibility = View.VISIBLE
-                                        itemRoot.translationY = itemDashed.translationY.minus(itemRoot.height)
-                                        itemRoot.translationX = 0f
-                                    }
-                                    else -> {}
                                 }
-                            }
-                            Gravity.CENTER -> {
-                                if (startMiddleEnd == Gravity.CENTER) {
-                                    itemDashed.visibility = View.VISIBLE
-                                    itemDashed.setImageResource(R.drawable.img_dashed_coachmark_center)
-                                    itemDashed.translationX = targetViewSize.left.toFloat().plus(30)
-                                    itemDashed.translationY = targetViewSize.bottom.plus(30).toFloat()
-                                    itemRoot.visibility = View.VISIBLE
-                                    itemRoot.translationY = itemDashed.translationY.plus(itemDashed.height)
-                                    itemRoot.translationX = 0f
+                                GravityIn.CENTER -> {
+                                    if (startMiddleEnd == GravityIn.CENTER) {
+                                        GravityHelper.BottomGravity().gravity(this, targetViewSize)
+                                    }
                                 }
-                            }
 
-                            else -> {}
+                                else -> {}
+                            }
+                        }else {
+                            // manual
+                            when(getGravity()) {
+                                Gravity.TOP -> {
+                                    GravityHelper.TopGravity().gravity(this, targetViewSize)
+                                }
+                                Gravity.BOTTOM -> {
+                                    GravityHelper.BottomGravity().gravity(this, targetViewSize)
+                                }
+                                Gravity.START_TOP -> {
+                                    GravityHelper.StartTopGravity().gravity(this, targetViewSize)
+                                }
+                                Gravity.END_TOP -> {
+                                    GravityHelper.EndTopGravity().gravity(this, targetViewSize)
+                                }
+                                Gravity.END_BOTTOM -> {
+                                    GravityHelper.EndBottomGravity().gravity(this, targetViewSize)
+                                }
+                                Gravity.START_BOTTOM -> {
+                                    GravityHelper.StartBottomGravity().gravity(this, targetViewSize)
+                                }
+                                else -> {}
+                            }
                         }
                     }
                 }
@@ -227,27 +194,22 @@ class CoachMarkOverlay : FrameLayout{
         }
     }
 
-    private fun positionLeftMiddleRight(left: Int, right: Int ,halfWidth: Int): Gravity {
+    private fun positionLeftMiddleRight(left: Int, right: Int ,halfWidth: Int): GravityIn {
         return if (halfWidth in left..right) {
-            Gravity.CENTER
+            GravityIn.CENTER
         }else if (left in 1 until halfWidth) {
-            Gravity.START
+            GravityIn.START
         }else {
-            Gravity.END
+            GravityIn.END
         }
     }
 
-    private fun positionTopBottom(bottom: Int, halfHeight: Int) : Gravity {
+    private fun positionTopBottom(bottom: Int, halfHeight: Int) : GravityIn {
         return if (bottom in 1 until halfHeight) {
-            Gravity.TOP
+            GravityIn.TOP
         }else {
-            Gravity.BOTTOM
+            GravityIn.BOTTOM
         }
-    }
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-
     }
 
     fun show(root: ViewGroup) {
@@ -259,7 +221,7 @@ class CoachMarkOverlay : FrameLayout{
         private var mOverlayColor: Int = Color.BLACK
         private var mOverlayOpacity: Int = 150
         private var mOverlayTransparentShape: Shape = Shape.BOX
-        private var mOverlayTransparentCornerRadius: Float = 8f
+        private var mOverlayTransparentCornerRadius: Float = mContext.resources.getDimension(R.dimen.margin_07)
         private var mOverlayTransparentMargin: Rect = Rect()
         private var mOverlayTransparentPadding: Rect = Rect()
         private var mOverlayClickListener: OverlayClickListener? = null
@@ -268,11 +230,11 @@ class CoachMarkOverlay : FrameLayout{
         private var mBaseTabPosition: Int = -1
         private var mSetTitle: String = ""
         private var mSetSubTitle: String = ""
-        private var mLimit: String = ""
+        private var mLimit: Int = 0
         private var mTextBtnPositive: String = ""
         private var mSkipBtn: String? = null
-        private var mGravityTopBottom: Gravity = Gravity.NULL
-        private var mGravityStartEnd: Gravity = Gravity.NULL
+        private var mGravity: Gravity = Gravity.NULL
+        private var mMax = 0
 
         fun getOverlayTargetView(): View? = mOverlayTargetView
         fun getOverlayColor(): Int = mOverlayColor
@@ -287,11 +249,11 @@ class CoachMarkOverlay : FrameLayout{
         fun getSkipClickListener(): SkipClickListener? = mSkipClickListener
         fun getTitle(): String = mSetTitle
         fun getSubTitle(): String = mSetSubTitle
-        fun getLimit(): String = mLimit
+        fun getLimit(): Int = mLimit
         fun getTextBtnPositive(): String = mTextBtnPositive
         fun getSkipBtn(): String? = mSkipBtn
-        fun getGravityTopBottom(): Gravity = mGravityTopBottom
-        fun getGravityStartEnd(): Gravity = mGravityStartEnd
+        fun getGravity(): Gravity = mGravity
+        fun getMax(): Int = mMax
 
         fun setOverlayTargetCoordinates(coordinates: Rect): Builder {
             mTargetCoordinates.set(coordinates)
@@ -326,7 +288,7 @@ class CoachMarkOverlay : FrameLayout{
             return this
         }
 
-        fun setInfoText(title: String, subTitle: String, limit: String): Builder {
+        fun setInfoText(title: String, subTitle: String, limit: Int): Builder {
             mSetTitle = title
             mSetSubTitle = subTitle
             mLimit = limit
@@ -335,7 +297,6 @@ class CoachMarkOverlay : FrameLayout{
 
         fun setTextBtnPositive(text: String): Builder {
             mTextBtnPositive = text
-            Log.i("TAG", "setTextBtnPositive: $text")
             return this
         }
 
@@ -344,26 +305,14 @@ class CoachMarkOverlay : FrameLayout{
             return this
         }
 
-        fun setGravityTopBottom(gravity: Gravity): Builder {
-            mGravityTopBottom = gravity
+        fun setGravity(gravity: Gravity): Builder {
+            mGravity = gravity
             return this
         }
 
-        fun setGravityStartEnd(gravity: Gravity): Builder {
-            mGravityStartEnd = gravity
-            return this
-        }
-
-        fun build(): CoachMarkOverlay {
+        fun build(max: Int): CoachMarkOverlay {
+            mMax = max
             return CoachMarkOverlay(mContext, this)
         }
-    }
-
-    interface OverlayClickListener {
-        fun onOverlayClick(overlay: CoachMarkOverlay)
-    }
-
-    interface SkipClickListener {
-        fun onSkipClick(view: View)
     }
 }
