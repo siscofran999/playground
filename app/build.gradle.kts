@@ -64,4 +64,5 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.3.2")
     debugImplementation("androidx.compose.ui:ui-tooling:1.3.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.3.2")
+    implementation("com.github.siscofran999:coachmark:0.9-beta")
 }
